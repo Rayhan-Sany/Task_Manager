@@ -13,7 +13,7 @@ class SvgBackgroundSetter extends StatelessWidget {
       children: [
         SvgPicture.asset(AssetsPath.backgroundSvg,
             height: double.infinity, width: double.infinity, fit: BoxFit.cover),
-        child,
+         child,
       ],
     );
   }
