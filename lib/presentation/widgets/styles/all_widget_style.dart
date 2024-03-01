@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/presentation/utils/app_color.dart';
 
 class AllWidgetStyle{
 
@@ -23,7 +24,7 @@ class AllWidgetStyle{
 
   static ButtonStyle elevatedButtonStyle(){
     return  ElevatedButton.styleFrom(
-      backgroundColor:const Color(0xFF21BF73),
+      backgroundColor:AppColor.textButtonColor,
       foregroundColor: Colors.white,
       minimumSize:const Size(double.infinity,40),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8),),
@@ -33,7 +34,7 @@ class AllWidgetStyle{
   static ButtonStyle textButtonStyle() {
     return TextButton.styleFrom(
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      foregroundColor: const Color(0xFF21BF73),
+      foregroundColor:AppColor.textButtonColor,
       alignment: Alignment.centerLeft,
       padding:const EdgeInsets.all(3),
       textStyle: const TextStyle(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:task_manager/presentation/screens/email_verification_screen.dart';
-import 'package:task_manager/presentation/screens/sign_up_screen.dart';
+import 'package:task_manager/presentation/screens/auth/email_verification_screen.dart';
+import 'package:task_manager/presentation/screens/main_bottom_nav_bar_screen.dart';
+import 'package:task_manager/presentation/screens/auth/sign_up_screen.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
 
 class SignIn extends StatefulWidget {
@@ -15,6 +16,7 @@ class _SignInState extends State<SignIn> {
   final _formkey = GlobalKey<FormState>();
   final TextEditingController emailTEcontroller = TextEditingController();
   final TextEditingController passwordTEcontroller = TextEditingController();
+  bool _obsecure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,18 +54,31 @@ class _SignInState extends State<SignIn> {
                     return emailValidator(value);
                   }),
               const SizedBox(height: 12),
-              signInTextFormField(
-                  lebelText: 'Password',
-                  teController: passwordTEcontroller,
+              TextFormField(
+                  decoration: InputDecoration(
+                      labelText: 'Password',
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _obsecure ? _obsecure = false : _obsecure = true;
+                        },
+                        icon: Icon(_obsecure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                      )),
+                  controller: passwordTEcontroller,
                   validator: (value) {
                     return passwordValidator(value);
-                  },
-                  obscure: true),
+                  }),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
                   if (_formkey.currentState!.validate()) {
-                    print("Button Clicked");
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const MainBottomNavBarScreen()),
+                        (route) => false);
                   }
                 },
                 child: const Icon(Symbols.expand_circle_right),
@@ -107,8 +122,11 @@ class _SignInState extends State<SignIn> {
   TextButton forgotPasswordButton() {
     return TextButton(
       onPressed: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) =>const EmailVerificationScreen()),);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const EmailVerificationScreen()),
+        );
       },
       child: Text(
         'Forget Password?',

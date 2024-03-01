@@ -38,6 +38,7 @@ final GlobalKey<FormState> _formKey= GlobalKey<FormState>();
                       enabled: true,
                       decoration: const InputDecoration(hintText: 'Email'),
                       controller:_emailNameTEcontroller,
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -56,6 +57,7 @@ final GlobalKey<FormState> _formKey= GlobalKey<FormState>();
                       enabled: true,
                       decoration: const InputDecoration(hintText: 'Mobile'),
                       controller:_mobileTEcontroller,
+                      keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:task_manager/presentation/screens/pin_verification_screen.dart';
+import 'package:task_manager/presentation/screens/auth/pin_verification_screen.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
 
 class EmailVerificationScreen extends StatefulWidget {

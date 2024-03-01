@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:task_manager/presentation/utils/app_color.dart';
 import 'package:task_manager/presentation/widgets/styles/all_widget_style.dart';
 class AllThemeData{
   static InputDecorationTheme inputDecorationTheme() {
@@ -24,8 +26,8 @@ class AllThemeData{
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(
-          color: Color(0xFF21BF73),
+        borderSide: BorderSide(
+          color: AppColor.baseColor,
         ),
       ),
       fillColor: Colors.white,
@@ -35,7 +37,9 @@ class AllThemeData{
         color: Colors.black.withOpacity(0.3),
         fontSize: 15,
       ),
-
+  border:const OutlineInputBorder(
+    borderRadius: BorderRadius.only(topLeft:Radius.circular(8),bottomLeft:Radius.circular(8))
+  ),
     );
   }
   static TextTheme textTheme(BuildContext context){
@@ -56,5 +60,25 @@ class AllThemeData{
       style: AllWidgetStyle.textButtonStyle(),
     );
   }
+  static AppBarTheme appBarTheme(BuildContext context){
+    return AppBarTheme(
+      backgroundColor: AppColor.baseColor,
+      titleTextStyle:const TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+        fontWeight:FontWeight.normal,
+      ),
+      titleSpacing: 7,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.black12,
+      ),
+    );
+  }
 
+  static BottomNavigationBarThemeData bottomNavigationBarThemeData(BuildContext context){
+    return BottomNavigationBarThemeData(
+      selectedItemColor: AppColor.baseColor,
+      unselectedItemColor: AppColor.unselectedItemColor,
+    );
+  }
 }
