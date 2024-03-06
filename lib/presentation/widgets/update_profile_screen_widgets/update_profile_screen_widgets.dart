@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/presentation/utils/app_color.dart';
+import 'package:task_manager/presentation/widgets/common_snackbar.dart';
+
 class UpdateProfileScreenWidgets {
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> onTapProfileWidgetSnackBar(BuildContext context) {
-    return ScaffoldMessenger.of(context)
-        .showSnackBar(
-             SnackBar(content:const Text('You Already in Update Profile Screen'),backgroundColor: AppColor.baseColor,));
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+      onTapProfileWidgetSnackBar(BuildContext context) {
+    return commonSnackBar(context,'You Already in Update Profile Screen');
   }
 }
