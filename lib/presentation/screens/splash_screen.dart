@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/presentation/screens/main_bottom_nav_bar_screen.dart';
@@ -20,18 +21,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _moveToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
-    bool isLoggedIn =await AuthController.isUserLoggedIn();
-    print('${isLoggedIn.toString()}------------------------\n\n');
+    await Future.delayed(const Duration(seconds: 1));
+    bool isLoggedIn = await AuthController.isUserLoggedIn();
+    log('${isLoggedIn.toString()}------------------------\n\n');
     if (isLoggedIn) {
       if (mounted) {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-            builder: (context) => const MainBottomNavBarScreen()), (
-            route) => false);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MainBottomNavBarScreen()));
       }
-    }
-    else{
-      if(mounted){
+    } else {
+      if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SignIn()),

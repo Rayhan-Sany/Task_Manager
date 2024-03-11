@@ -12,21 +12,28 @@ class CancelledTaskScreen extends StatefulWidget {
 }
 
 class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
+  bool isRequireRefresh=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppDefaultAppBar.appBar(),
-      body:SvgBackgroundSetter(
-        child: Column(
-          children: [
-            taskCounterSection,
-            Expanded(
-              child: taskCardList('Cancelled'),
-            ),
-          ],
+      body: SvgBackgroundSetter(
+        child: RefreshIndicator(
+          onRefresh:()=>_onRefresh(),
+          child: Column(
+            children: [
+              TaskCounterSection(isRequireRefresh:isRequireRefresh),
+              Expanded(
+                child: TaskCardList(status:'Cancelled',isRequireRefresh:isRequireRefresh),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
+  Future<void> _onRefresh() async {
+    isRequireRefresh = true;
+    setState(() {});
+  }
 }

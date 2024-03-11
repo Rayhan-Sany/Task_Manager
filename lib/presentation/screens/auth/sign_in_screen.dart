@@ -65,6 +65,7 @@ class _SignInState extends State<SignIn> {
                   hintText: 'Email',
                 ),
                 enabled: true,
+                keyboardType:TextInputType.emailAddress,
                 validator: emailValidator,
               ),
               const SizedBox(height: 12),
@@ -197,7 +198,7 @@ class _SignInState extends State<SignIn> {
     }
     else{
       if(mounted){
-        commonSnackBar(context,'Login Failed Try Again');
+        commonSnackBar(context:context,snackBarContent:'Login Failed Try Again',isErrorSnack:true);
       }
     }
     _signInNotInProgress = true;

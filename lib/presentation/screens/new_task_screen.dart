@@ -14,32 +14,49 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
+  bool isNewTaskAdded = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor.baseColor,
         foregroundColor: Colors.white,
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          isNewTaskAdded = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => const AddNewTaskScreen()));
+          setState(() {});
         },
         child: const Icon(Icons.add),
       ),
-      appBar:AppDefaultAppBar.appBar(),
-      body:SvgBackgroundSetter(
-        child: Column(
-          children: [
-            taskCounterSection,
-            Expanded(
-              child: taskCardList('New'),
-            ),
-          ],
+      appBar: AppDefaultAppBar.appBar(),
+      body: SvgBackgroundSetter(
+        child: RefreshIndicator(
+          onRefresh: () {
+            return _refreshWidgets();
+          },
+          child: Column(
+            children: [
+              TaskCounterSection(
+                isRequireRefresh: isNewTaskAdded,
+              ),
+              Expanded(
+                child: TaskCardList(
+                  status: 'New',
+                  isRequireRefresh: isNewTaskAdded,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Future<void> _refreshWidgets() async {
+    isNewTaskAdded = true;
+    setState(() {});
+  }
 }

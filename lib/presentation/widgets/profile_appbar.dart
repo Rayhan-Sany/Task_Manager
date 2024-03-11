@@ -23,17 +23,15 @@ class AppDefaultAppBar {
           child: Row(
             children: [
               const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://www.dfstudio.com/digital-image-size-and-resolution-what-do-you-need-to-know"),
               ),
               const SizedBox(width: 12),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Rayhan Sany'),
+                  Text(AuthController.userData?.fullName ?? ''),
                   Text(
-                    'rayhansany2@gmail.com',
-                    style: TextStyle(fontSize: 10),
+                    AuthController.userData?.email ?? '',
+                    style: const TextStyle(fontSize: 10),
                   ),
                 ],
               ),

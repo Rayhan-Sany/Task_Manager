@@ -3,6 +3,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:task_manager/data/models/response_object.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/presentation/utils/app_color.dart';
+import 'package:task_manager/presentation/widgets/common_snackbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
 
 import '../../../data/utils/urls.dart';
@@ -21,7 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _signUpInProgress=false;
+  bool _signUpInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +44,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: const InputDecoration(hintText: 'Email'),
               controller: _emailNameTEController,
               keyboardType: TextInputType.emailAddress,
-              validator:emailValidator,
+              validator: emailValidator,
             ),
             const SizedBox(height: 12),
             TextFormField(
               enabled: true,
               decoration: const InputDecoration(hintText: 'First Name'),
               controller: _firstNameTEController,
-              validator:(value){
-                return isFieldEmptyValidityCheck(value,'Enter Your First Name');
+              validator: (value) {
+                return isFieldEmptyValidityCheck(
+                    value, 'Enter Your First Name');
               },
             ),
             const SizedBox(height: 12),
@@ -59,8 +61,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               enabled: true,
               decoration: const InputDecoration(hintText: 'Last Name'),
               controller: _lastNameTEController,
-              validator:(value){
-                return isFieldEmptyValidityCheck(value,'Enter Your Last Name');
+              validator: (value) {
+                return isFieldEmptyValidityCheck(value, 'Enter Your Last Name');
               },
             ),
             const SizedBox(height: 12),
@@ -69,8 +71,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: const InputDecoration(hintText: 'Mobile'),
               controller: _mobileTEController,
               keyboardType: TextInputType.phone,
-              validator:(value){
-                return isFieldEmptyValidityCheck(value,'Enter Your Mobile');
+              validator: (value) {
+                return isFieldEmptyValidityCheck(value, 'Enter Your Mobile');
               },
             ),
             const SizedBox(height: 12),
@@ -82,14 +84,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 12),
             Visibility(
-              visible:!_signUpInProgress,
-              replacement: Center(child: CircularProgressIndicator(color:AppColor.baseColor,)),
+              visible: !_signUpInProgress,
+              replacement: Center(
+                  child: CircularProgressIndicator(
+                color: AppColor.baseColor,
+              )),
               child: ElevatedButton(
                 onPressed: () {
-                  if(_formKey.currentState!.validate())
-                    {
-                      _signUp();
-                    }
+                  if (_formKey.currentState!.validate()) {
+                    _signUp();
+                  }
                 },
                 child: const Icon(Symbols.expand_circle_right),
               ),
@@ -115,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    _signUpInProgress=true;
+    _signUpInProgress = true;
     setState(() {});
     Map<String, dynamic> requestBody = {
       "email": _emailNameTEController.text.trim(),
@@ -128,55 +132,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
         await NetworkCaller.postRequest(Url.registrationUrl, requestBody);
     if (response.isSuccess) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sign Up Success please log in')));
+        commonSnackBar(
+            context: context, snackBarContent: 'Sign Up Success please log in');
         Navigator.pop(context);
       }
-    }
-    else{
-      if(mounted){
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sign Up Failed Try Again')));
+    } else {
+      if (mounted) {
+        commonSnackBar(
+            context: context,
+            snackBarContent: 'Sign Up Failed Try Again',
+            isErrorSnack: true);
       }
     }
-    _signUpInProgress=false;
+    _signUpInProgress = false;
     setState(() {});
   }
 
-bool isFieldEmpty(String? value){
-    if(value?.trim().isEmpty??true){
+  bool isFieldEmpty(String? value) {
+    if (value?.trim().isEmpty ?? true) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
-}
-String? isFieldEmptyValidityCheck(String? value,String validatorMassage){
-  if(value?.trim().isEmpty??true){
-    return validatorMassage;
   }
-  else{
-    return null;
+
+  String? isFieldEmptyValidityCheck(String? value, String validatorMassage) {
+    if (value?.trim().isEmpty ?? true) {
+      return validatorMassage;
+    } else {
+      return null;
+    }
   }
-}
-String? emailValidator(String? value)
-{
-  if(isFieldEmpty(value)){
-    return 'Enter Your Email';
+
+  String? emailValidator(String? value) {
+    if (isFieldEmpty(value)) {
+      return 'Enter Your Email';
+    } else {
+      return null;
+    }
   }
-  else{
-    return null;
-  }
-}
-  String? passwordValidator(String? value)
-  {
-    if(value==null||isFieldEmpty(value)) {
+
+  String? passwordValidator(String? value) {
+    if (value == null || isFieldEmpty(value)) {
       return 'Enter Your Password';
-    }
-    else if(value.length<6){
+    } else if (value.length < 6) {
       return 'Password length Should be At Least 6 character';
-    }
-    else{
+    } else {
       return null;
     }
   }

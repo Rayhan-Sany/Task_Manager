@@ -18,12 +18,13 @@ class _TaskManagerState extends State<TaskManager> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        inputDecorationTheme: AllThemeData.inputDecorationTheme(),
-        elevatedButtonTheme: AllThemeData.elevatedButtonThemeData(),
-        textButtonTheme: AllThemeData.textButtonThemeData(),
+        inputDecorationTheme: AllThemeData.inputDecorationTheme,
+        elevatedButtonTheme: AllThemeData.elevatedButtonThemeData,
+        textButtonTheme: AllThemeData.textButtonThemeData,
         textTheme: AllThemeData.textTheme(context),
         appBarTheme: AllThemeData.appBarTheme(context),
         bottomNavigationBarTheme:AllThemeData.bottomNavigationBarThemeData(context),
+        progressIndicatorTheme:AllThemeData.progressIndicatorThemeData,
       ),
       home: const SplashScreen(),
     );

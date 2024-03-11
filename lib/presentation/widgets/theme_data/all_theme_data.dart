@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:task_manager/presentation/utils/app_color.dart';
 import 'package:task_manager/presentation/widgets/styles/all_widget_style.dart';
 class AllThemeData{
-  static InputDecorationTheme inputDecorationTheme() {
+  static InputDecorationTheme get inputDecorationTheme {
     return InputDecorationTheme(
       hintStyle: TextStyle(
         color:Colors.black.withOpacity(0.35),
@@ -50,12 +50,12 @@ class AllThemeData{
     );
   }
 
-  static ElevatedButtonThemeData elevatedButtonThemeData() {
+  static ElevatedButtonThemeData get elevatedButtonThemeData{
     return ElevatedButtonThemeData(
       style:AllWidgetStyle.elevatedButtonStyle(),
     );
   }
-  static TextButtonThemeData textButtonThemeData() {
+  static TextButtonThemeData get textButtonThemeData{
     return TextButtonThemeData(
       style: AllWidgetStyle.textButtonStyle(),
     );
@@ -69,7 +69,7 @@ class AllThemeData{
         fontWeight:FontWeight.normal,
       ),
       titleSpacing: 7,
-      systemOverlayStyle: SystemUiOverlayStyle(
+      systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Colors.black12,
       ),
     );
@@ -81,4 +81,5 @@ class AllThemeData{
       unselectedItemColor: AppColor.unselectedItemColor,
     );
   }
+  static get progressIndicatorThemeData=>ProgressIndicatorThemeData(color:AppColor.baseColor);
 }

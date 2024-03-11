@@ -12,21 +12,31 @@ class CompleteTaskScreen extends StatefulWidget {
 }
 
 class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
+  bool isRequireRefresh = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppDefaultAppBar.appBar(),
-      body:SvgBackgroundSetter(
-        child: Column(
-          children: [
-            taskCounterSection,
-            Expanded(
-              child: taskCardList('Complete'),
-            ),
-          ],
+      appBar: AppDefaultAppBar.appBar(),
+      body: SvgBackgroundSetter(
+        child: RefreshIndicator(
+          onRefresh: () => _onRefresh(),
+          child: Column(
+            children: [
+              TaskCounterSection(isRequireRefresh: isRequireRefresh),
+              Expanded(
+                child: TaskCardList(
+                    status: 'Completed', isRequireRefresh: isRequireRefresh),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Future<void> _onRefresh() async {
+    isRequireRefresh = true;
+    setState(() {});
+  }
 }
