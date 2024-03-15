@@ -7,4 +7,5 @@ class Url{
   static String taskCardDataByStatusUrl(String status)=>'$baseUrl/listTaskByStatus/$status';
   static String deleteTaskUrl(String taskId)=>'$baseUrl/deleteTask/$taskId';
   static String updateTaskStatusUrl(String taskId,String status)=>'$baseUrl/updateTaskStatus/$taskId/$status';
+  static String updateProfileUrl='$baseUrl/profileUpdate';
 }

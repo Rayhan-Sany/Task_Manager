@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:task_manager/app.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
@@ -22,7 +23,10 @@ class AppDefaultAppBar {
           },
           child: Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
+                backgroundImage: AppDefaultAppBar.isImageAvailable
+                    ? MemoryImage(base64Decode(AuthController.userData!.photo!))
+                    : null,
               ),
               const SizedBox(width: 12),
               Column(
@@ -50,4 +54,14 @@ class AppDefaultAppBar {
           ),
         ),
       );
+
+  static bool get isImageAvailable {
+    if (AuthController.userData?.photo == null) {
+      return false;
+    }
+    if (AuthController.userData!.photo!.trim().isEmpty) {
+      return false;
+    }
+    return true;
+  }
 }

@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:task_manager/app.dart';
 import 'package:task_manager/data/models/response_object.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
+
+import '../../presentation/screens/auth/sign_in_screen.dart';
 
 class NetworkCaller {
   static Future<ResponseObject> getRequest(String url) async {
     try {
-      Response response = await get(Uri.parse(url),headers:{'token':AuthController.userToken??''});
+      Response response = await get(Uri.parse(url),
+          headers: {'token': AuthController.userToken ?? ''});
       log(response.statusCode.toString());
       log(response.body.toString());
       if (response.statusCode == 200) {
@@ -49,6 +54,10 @@ class NetworkCaller {
             body: decodedResponse,
             statusCode: response.statusCode,
             isSuccess: true);
+      } else if (response.statusCode == 401) {
+      if(AuthController.userToken!=null) _moveToSignIn();
+        return ResponseObject(
+            body: '', statusCode: response.statusCode, isSuccess: false);
       } else {
         return ResponseObject(
             body: '', statusCode: response.statusCode, isSuccess: false);
@@ -60,6 +69,15 @@ class NetworkCaller {
           statusCode: -1,
           isSuccess: false,
           errorMassage: e.toString());
+    }
+  }
+  static void _moveToSignIn(){
+    AuthController.clearUserData();
+    if (TaskManager.globalKey.currentContext!.mounted) {
+      Navigator.pushAndRemoveUntil(
+          TaskManager.globalKey.currentContext!,
+          MaterialPageRoute(builder: (context) => const SignIn()),
+              (route) => false);
     }
   }
 }

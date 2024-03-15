@@ -79,7 +79,8 @@ class _TaskCardListState extends State<TaskCardList> {
       setState(() {});
       taskCardResponseByStatus =
           TaskCardResponseByStatus.fromJson(responseObject.body);
-    } else {
+    }
+     else {
       getTaskByStatusInProgress = false;
       setState(() {});
       if (mounted) {
