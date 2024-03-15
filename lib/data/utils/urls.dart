@@ -8,4 +8,7 @@ class Url{
   static String deleteTaskUrl(String taskId)=>'$baseUrl/deleteTask/$taskId';
   static String updateTaskStatusUrl(String taskId,String status)=>'$baseUrl/updateTaskStatus/$taskId/$status';
   static String updateProfileUrl='$baseUrl/profileUpdate';
+  static String verifyEmailAndSentOtpUrl(String email)=>'$baseUrl/RecoverVerifyEmail/$email';
+  static String verifyOTPUrl(String otp,String email)=>'$baseUrl/RecoverVerifyOTP/$email/$otp';
+  static String setPasswordUrl='$baseUrl/RecoverResetPass';
 }

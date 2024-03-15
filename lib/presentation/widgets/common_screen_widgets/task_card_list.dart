@@ -3,8 +3,8 @@ import 'package:task_manager/data/models/response_object.dart';
 import 'package:task_manager/data/models/task_by_status_response.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/utils/urls.dart';
+import 'package:task_manager/presentation/widgets/common_screen_widgets/task_card.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
-import 'package:task_manager/presentation/widgets/new_task_screen_widgets/task_card.dart';
 
 class TaskCardList extends StatefulWidget {
   final String status;

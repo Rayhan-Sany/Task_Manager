@@ -62,6 +62,7 @@ class AppDefaultAppBar {
     if (AuthController.userData!.photo!.trim().isEmpty) {
       return false;
     }
+    print(AuthController.userData!.photo);
     return true;
   }
 }
