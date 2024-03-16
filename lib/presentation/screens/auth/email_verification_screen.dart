@@ -55,7 +55,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 decoration: const InputDecoration(hintText: 'Email'),
                 controller: _emailNameTEController,
                 validator:(String? value){
-                  if(value==null) return 'Enter Your Email';
+                  if(value==null) return 'Enter Your Email.';
                   if(str.isEmail(value)) {
                 return null;
               }else{

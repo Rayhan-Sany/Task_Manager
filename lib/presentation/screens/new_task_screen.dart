@@ -3,7 +3,6 @@ import 'package:task_manager/presentation/screens/add_new_task_screen.dart';
 import 'package:task_manager/presentation/utils/app_color.dart';
 import 'package:task_manager/presentation/widgets/profile_appbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
-
 import '../widgets/common_screen_widgets/task_card_list.dart';
 import '../widgets/common_screen_widgets/task_counter_section.dart';
 
