@@ -22,7 +22,6 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
           onRefresh:()=>_onRefresh(),
           child: Column(
             children: [
-              TaskCounterSection(isRequireRefresh:isRequireRefresh),
               Expanded(
                 child: TaskCardList(status:'Progress',isRequireRefresh:isRequireRefresh),
               ),
