@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:task_manager/app.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
@@ -7,6 +8,7 @@ import 'package:task_manager/presentation/widgets/update_profile_screen_widgets/
 import '../screens/auth/sign_in_screen.dart';
 
 class AppDefaultAppBar {
+  static List<String>? photo;
   static AppBar appBar({bool isNotInProfileScreen = true}) => AppBar(
         automaticallyImplyLeading: false,
         title: GestureDetector(
@@ -26,7 +28,7 @@ class AppDefaultAppBar {
               CircleAvatar(
                 backgroundImage: AppDefaultAppBar.isImageAvailable
                     ? MemoryImage(base64Decode(AuthController.userData!.photo!))
-                    : null,
+                    : MemoryImage(base64Decode(photo![1])),
               ),
               const SizedBox(width: 12),
               Column(
@@ -56,13 +58,19 @@ class AppDefaultAppBar {
       );
 
   static bool get isImageAvailable {
-    if (AuthController.userData?.photo == null) {
+    try {
+      photo = AuthController.userData!.photo!.split(',');
+      base64Decode(AuthController.userData!.photo!);
+      if (AuthController.userData?.photo == null) {
+        return false;
+      }
+      if (AuthController.userData!.photo!.trim().isEmpty) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      log(e.toString());
       return false;
     }
-    if (AuthController.userData!.photo!.trim().isEmpty) {
-      return false;
-    }
-    print(AuthController.userData!.photo);
-    return true;
   }
 }

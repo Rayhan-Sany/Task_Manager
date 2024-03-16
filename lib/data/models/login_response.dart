@@ -9,15 +9,15 @@ class LoginResponse {
   LoginResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     token = json['token'];
-    userData = json['data'] != null ? new UserData.fromJson(json['data']) : null;
+    userData = json['data'] != null ? UserData.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['token'] = this.token;
-    if (this.userData != null) {
-      data['data'] = this.userData!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['token'] = token;
+    if (userData != null) {
+      data['data'] = userData!.toJson();
     }
     return data;
   }

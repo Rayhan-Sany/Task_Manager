@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:task_manager/data/models/response_object.dart';
@@ -127,7 +128,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "lastName": _lastNameTEController.text.trim(),
       "mobile": _mobileTEController.text.trim(),
       "password": _passwordTEController.text,
-      "photo":'',
     };
     ResponseObject response =
         await NetworkCaller.postRequest(Url.registrationUrl, requestBody);
