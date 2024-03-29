@@ -59,7 +59,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   if(str.isEmail(value)) {
                 return null;
               }else{
-                    return 'Invalid Email';
+                    return 'Invalid Email.';
                   }
             },
               ),

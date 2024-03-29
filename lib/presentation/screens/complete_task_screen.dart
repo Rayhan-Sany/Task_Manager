@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/presentation/widgets/profile_appbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
+import '../controllers/task_list_controller.dart';
 import '../widgets/common_screen_widgets/task_card_list.dart';
 
 class CompleteTaskScreen extends StatefulWidget {
@@ -20,11 +22,11 @@ class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
       body: SvgBackgroundSetter(
         child: RefreshIndicator(
           onRefresh: () => _onRefresh(),
-          child: Column(
+          child: const Column(
             children: [
               Expanded(
                 child: TaskCardList(
-                    status: 'Completed', isRequireRefresh: isRequireRefresh),
+                    status: 'Completed'),
               ),
             ],
           ),
@@ -34,7 +36,6 @@ class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
   }
 
   Future<void> _onRefresh() async {
-    isRequireRefresh = true;
-    setState(() {});
+    Get.find<TaskListController>().getTaskListByStatus('Completed');
   }
 }

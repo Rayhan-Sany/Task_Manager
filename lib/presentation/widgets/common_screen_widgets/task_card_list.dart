@@ -1,93 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/data/models/response_object.dart';
-import 'package:task_manager/data/models/task_by_status_response.dart';
-import 'package:task_manager/data/services/network_caller.dart';
-import 'package:task_manager/data/utils/urls.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:task_manager/presentation/controllers/task_list_controller.dart';
 import 'package:task_manager/presentation/widgets/common_screen_widgets/task_card.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
+import '../../../data/models/taskByStatusData.dart';
 
 class TaskCardList extends StatefulWidget {
   final String status;
-   bool isRequireRefresh;
-   TaskCardList({super.key, required this.status,required this.isRequireRefresh});
+
+  const TaskCardList({super.key, required this.status});
 
   @override
   State<TaskCardList> createState() => _TaskCardListState();
 }
 
 class _TaskCardListState extends State<TaskCardList> {
-  bool getTaskByStatusInProgress = false;
-  bool deleteTaskInProgress = false;
-  TaskCardResponseByStatus? taskCardResponseByStatus;
+  List<TaskByStatusData> taskByStatusDataList=[];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getTaskByStatusDataFormApis();
+    _getTaskByStatusData();
   }
 
   @override
   Widget build(BuildContext context) {
-    if(widget.isRequireRefresh){
-      _getTaskByStatusDataFormApis();
-      widget.isRequireRefresh=false;
-    }
-    return Visibility(
-      visible: getTaskByStatusInProgress == false&&deleteTaskInProgress==false,
-      replacement: const Center(
-        child: CircularProgressIndicator(),
-      ),
-      child: Visibility(
-        visible:taskCardResponseByStatus?.taskByStatusDataList?.isNotEmpty??false,
-        replacement: const Center(
-          child:Text('No Task Added',style:TextStyle(fontSize: 20)),
-        ),
-        child: ListView.builder(
-          itemBuilder: (context, index) => TaskCard(
-            taskByStatusData:
-                taskCardResponseByStatus!.taskByStatusDataList![index],
-            deleteTaskLocally: () {
-              deleteTaskFromListLocally(index);
-            },
+    return GetBuilder<TaskListController>(builder: (taskListController) {
+      return Visibility(
+        visible: taskListController.isGetTaskListInProgress==false,
+        replacement:const Center(child: CircularProgressIndicator()),
+        child: Visibility(
+          visible: taskByStatusDataList.isNotEmpty,
+          replacement: const Center(
+            child: Text('No Task Added', style: TextStyle(fontSize: 20)),
           ),
-          shrinkWrap: true,
-          itemCount:
-              taskCardResponseByStatus?.taskByStatusDataList?.length ?? 0,
-          scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: ListView.builder(
+            itemBuilder: (context, index) => TaskCard(
+              taskByStatusData: taskByStatusDataList[index],
+              deleteTaskLocally: () {
+                Get.find<TaskListController>().deleteTaskFromListLocally(index);
+              },
+            ),
+            shrinkWrap: true,
+            itemCount: taskByStatusDataList.length ?? 0,
+            scrollDirection: Axis.vertical,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  void deleteTaskFromListLocally(int index) {
-    deleteTaskInProgress = true;
-    setState(() {});
-    taskCardResponseByStatus?.taskByStatusDataList?.removeAt(index);
-    deleteTaskInProgress=false;
-    setState(() {});
-  }
 
-  Future<void> _getTaskByStatusDataFormApis() async {
-    getTaskByStatusInProgress = true;
-    setState(() {});
-    ResponseObject responseObject = await NetworkCaller.getRequest(
-        Url.taskCardDataByStatusUrl(widget.status));
-    if (responseObject.isSuccess) {
-      getTaskByStatusInProgress = false;
-      setState(() {});
-      taskCardResponseByStatus =
-          TaskCardResponseByStatus.fromJson(responseObject.body);
-    }
-     else {
-      getTaskByStatusInProgress = false;
-      setState(() {});
+  Future<void> _getTaskByStatusData() async {
+
+    bool result =
+        await Get.find<TaskListController>().getTaskListByStatus(widget.status);
+    if (result) {
+      taskByStatusDataList = Get.find<TaskListController>().taskListByStatus;
+    } else {
       if (mounted) {
         commonSnackBar(
             context: context,
-            snackBarContent: responseObject.errorMassage ??
-                'Get Task Card List Has been failed');
+            snackBarContent: Get.find<TaskListController>().getErrorMessage);
       }
     }
   }

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:task_manager/data/models/login_response.dart';
-import 'package:task_manager/data/models/response_object.dart';
-import 'package:task_manager/data/services/network_caller.dart';
-import 'package:task_manager/data/utils/urls.dart';
-import 'package:task_manager/presentation/controllers/auth_controller.dart';
+import 'package:task_manager/presentation/controllers/sign_in_controller.dart';
 import 'package:task_manager/presentation/screens/auth/email_verification_screen.dart';
 import 'package:task_manager/presentation/screens/main_bottom_nav_bar_screen.dart';
 import 'package:task_manager/presentation/screens/auth/sign_up_screen.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
-
 import '../../utils/app_color.dart';
 
 class SignIn extends StatefulWidget {
@@ -21,12 +17,11 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  final _formkey = GlobalKey<FormState>();
-  final TextEditingController emailTEcontroller = TextEditingController();
-  final TextEditingController passwordTEcontroller = TextEditingController();
-  bool _obsecure = true;
-  bool _signInNotInProgress = true;
-
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+  final SignInController _signInController = Get.find<SignInController>();
+  bool _obscure = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +44,7 @@ class _SignInState extends State<SignIn> {
     return SizedBox(
       child: SafeArea(
         child: Form(
-          key: _formkey,
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -60,7 +55,7 @@ class _SignInState extends State<SignIn> {
                       .titleLarge),
               const SizedBox(height: 20),
               TextFormField(
-                controller:emailTEcontroller,
+                controller:_emailTEController,
                 decoration: const InputDecoration(
                   hintText: 'Email',
                 ),
@@ -74,33 +69,37 @@ class _SignInState extends State<SignIn> {
                       hintText: 'Password',
                       suffixIcon: IconButton(
                         onPressed: () {
-                          _obsecure ? _obsecure = false : _obsecure = true;
+                          _obscure ? _obscure = false : _obscure = true;
                           setState(() {});
                         },
-                        icon: Icon(_obsecure
+                        icon: Icon(_obscure
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined),
                       )),
-                  controller: passwordTEcontroller,
-                  obscureText: _obsecure,
+                  controller: _passwordTEController,
+                  obscureText: _obscure,
                   validator: (value) {
                     return passwordValidator(value);
                   }),
               const SizedBox(height: 12),
-              Visibility(
-                visible: _signInNotInProgress,
-                replacement: Center(
-                    child: CircularProgressIndicator(
-                      color: AppColor.baseColor,
-                    )),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formkey.currentState!.validate()) {
-                      _signIn();
-                    }
-                  },
-                  child: const Icon(Symbols.expand_circle_right),
-                ),
+              GetBuilder<SignInController>(
+                builder: (controller) {
+                  return Visibility(
+                    visible: _signInController.isSignInInProgress==false,
+                    replacement: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.baseColor,
+                        )),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _signIn();
+                        }
+                      },
+                      child: const Icon(Symbols.expand_circle_right),
+                    ),
+                  );
+                }
               ),
               const SizedBox(height: 40),
               Column(
@@ -176,20 +175,11 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  void _signIn() async {
-    _signInNotInProgress = false;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": emailTEcontroller.text.trim(),
-      "password": passwordTEcontroller.text,
-    };
-    ResponseObject response =
-    await NetworkCaller.postRequest(Url.logInUrl, requestBody);
-    if (response.isSuccess) {
-      if (!mounted) return;
-      LoginResponse loginResponse = LoginResponse.fromJson(response.body);
-      AuthController.saveUserData(loginResponse.userData!);
-      AuthController.saveUserToken(loginResponse.token!);
+  Future<void> _signIn() async {
+    bool result =
+    await _signInController.signIn(
+        _emailTEController.text.trim(), _passwordTEController.text);
+    if (result) {
       if (mounted) {
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
             builder: (context) => const MainBottomNavBarScreen()), (
@@ -198,17 +188,18 @@ class _SignInState extends State<SignIn> {
     }
     else{
       if(mounted){
-        commonSnackBar(context:context,snackBarContent:'Login Failed Try Again',isErrorSnack:true);
+        commonSnackBar(
+            context: context,
+            snackBarContent: _signInController.getErrorMessage,
+            isErrorSnack: true);
       }
     }
-    _signInNotInProgress = true;
-    setState(() {});
   }
 
   @override
   void dispose() {
-    emailTEcontroller.dispose();
-    passwordTEcontroller.dispose();
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
     super.dispose();
   }
 } //State

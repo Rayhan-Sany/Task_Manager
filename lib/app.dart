@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:task_manager/controller_binder.dart';
 import 'package:task_manager/presentation/widgets/theme_data/all_theme_data.dart';
 import 'presentation/screens/splash_screen.dart';
 
@@ -12,7 +14,8 @@ class TaskManager extends StatefulWidget {
 class _TaskManagerState extends State<TaskManager> {
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return  GetMaterialApp(
+      initialBinding: ControllerBinder(),
       navigatorKey:TaskManager.globalKey,
       title: 'Task Manager',
       debugShowCheckedModeBanner: false,

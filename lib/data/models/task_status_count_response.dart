@@ -2,15 +2,15 @@ import 'package:task_manager/data/models/taskCount_by_status_data.dart';
 
 class TaskStatusCountResponse {
   String? status;
-  List<TaskByStatusData>? listOfTaskByStatusData;
+  List<TaskCountByStatusData>? listOfTaskByStatusData;
   TaskStatusCountResponse({this.status, this.listOfTaskByStatusData});
 
   TaskStatusCountResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
-      listOfTaskByStatusData = <TaskByStatusData>[];
+      listOfTaskByStatusData = <TaskCountByStatusData>[];
       json['data'].forEach((v) {
-        listOfTaskByStatusData!.add(TaskByStatusData.fromJson(v));
+        listOfTaskByStatusData!.add(TaskCountByStatusData.fromJson(v));
       });
     }
   }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:task_manager/presentation/widgets/profile_appbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
+import '../controllers/task_list_controller.dart';
 import '../widgets/common_screen_widgets/task_card_list.dart';
-import '../widgets/common_screen_widgets/task_counter_section.dart';
-
 class CancelledTaskScreen extends StatefulWidget {
   const CancelledTaskScreen({super.key});
 
@@ -12,7 +13,6 @@ class CancelledTaskScreen extends StatefulWidget {
 }
 
 class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
-  bool isRequireRefresh=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,10 +20,10 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
       body: SvgBackgroundSetter(
         child: RefreshIndicator(
           onRefresh:()=>_onRefresh(),
-          child: Column(
+          child: const Column(
             children: [
               Expanded(
-                child: TaskCardList(status:'Cancelled',isRequireRefresh:isRequireRefresh),
+                child: TaskCardList(status:'Cancelled'),
               ),
             ],
           ),
@@ -32,7 +32,6 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
     );
   }
   Future<void> _onRefresh() async {
-    isRequireRefresh = true;
-    setState(() {});
+       Get.find<TaskListController>().getTaskListByStatus('Cancelled');
   }
 }

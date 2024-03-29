@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/presentation/widgets/profile_appbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
+import '../controllers/task_list_controller.dart';
 import '../widgets/common_screen_widgets/task_card_list.dart';
 
 class ProgressTaskScreen extends StatefulWidget {
@@ -19,10 +21,10 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
       body: SvgBackgroundSetter(
         child: RefreshIndicator(
           onRefresh:()=>_onRefresh(),
-          child: Column(
+          child: const Column(
             children: [
               Expanded(
-                child: TaskCardList(status:'Progress',isRequireRefresh:isRequireRefresh),
+                child: TaskCardList(status:'Progress'),
               ),
             ],
           ),
@@ -31,7 +33,6 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
     );
   }
   Future<void> _onRefresh() async {
-    isRequireRefresh = true;
-    setState(() {});
+    Get.find<TaskListController>().getTaskListByStatus('Progress');
   }
 }
