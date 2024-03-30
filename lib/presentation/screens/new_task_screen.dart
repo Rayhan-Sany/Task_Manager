@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/presentation/controllers/add_new_task_controller.dart';
 import 'package:task_manager/presentation/controllers/task_count_controller.dart';
 import 'package:task_manager/presentation/screens/add_new_task_screen.dart';
 import 'package:task_manager/presentation/utils/app_color.dart';
@@ -25,7 +24,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         backgroundColor: AppColor.baseColor,
         foregroundColor: Colors.white,
         onPressed: () async {
-          bool isNewTaskAdded =await goToAddNewTaskScreen();
+          bool isNewTaskAdded =await Get.to(const AddNewTaskScreen());
           if(isNewTaskAdded){
             _refreshWidgets();
           }
@@ -58,21 +57,4 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     Get.find<TaskCountController>().getTaskCountByStatus();
   }
 
-  Future<bool> goToAddNewTaskScreen()async{
-    bool isNewTaskAdded =false;
-    try {
-      final addNewTaskController = Get.find<AddNewTaskController>();
-      if(addNewTaskController.initialized) {
-        isNewTaskAdded = await Get.to(const AddNewTaskScreen());
-      } else {
-        Get.lazyPut(() => addNewTaskController);
-        isNewTaskAdded = await Get.to(const AddNewTaskScreen());
-      }
-
-    } catch(e) {
-      Get.lazyPut(() => AddNewTaskController);
-      isNewTaskAdded = await Get.to(const AddNewTaskScreen());
-    }
-    return isNewTaskAdded;
-  }
 }

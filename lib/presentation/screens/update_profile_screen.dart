@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:task_manager/data/models/user_data.dart';
-import 'package:task_manager/data/services/network_caller.dart';
-import 'package:task_manager/data/utils/urls.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
+import 'package:task_manager/presentation/controllers/profile_appbar_Controller.dart';
+import 'package:task_manager/presentation/controllers/update_profile_controller.dart';
 import 'package:task_manager/presentation/screens/main_bottom_nav_bar_screen.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
 import 'package:task_manager/presentation/widgets/profile_appbar.dart';
@@ -27,7 +28,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final TextEditingController _photoTEController = TextEditingController();
-  bool _updateProfileInProgress = false;
+  UpdateProfileController updateProfileController=Get.find<UpdateProfileController>();
   String? photo;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -47,7 +48,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppDefaultAppBar.appBar(isNotInProfileScreen: false),
+      appBar: AppDefaultAppBar.appBar(isNotInProfileScreen:false),
       body: SvgBackgroundSetter(
           child: SingleChildScrollView(
         padding: const EdgeInsets.only(left: 40, right: 30, top: 45),
@@ -129,19 +130,23 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           controller: _passwordTEController,
         ),
         const SizedBox(height: 12),
-        Visibility(
-          visible: _updateProfileInProgress == false,
-          replacement: const Center(
-            child: CircularProgressIndicator(),
-          ),
-          child: ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _updateProfile();
-              }
-            },
-            child: const Icon(Symbols.expand_circle_right),
-          ),
+        GetBuilder<UpdateProfileController>(
+          builder: (updateProfileController) {
+            return Visibility(
+              visible: updateProfileController.isUpdateProfileInProgress == false,
+              replacement: const Center(
+                child: CircularProgressIndicator(),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _updateProfile();
+                  }
+                },
+                child: const Icon(Symbols.expand_circle_right),
+              ),
+            );
+          }
         ),
         const SizedBox(height: 20),
         Row(
@@ -191,8 +196,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
-    _updateProfileInProgress = true;
-    setState(() {});
+    FocusScope.of(context).unfocus();
     Map<String, dynamic> inputParams = {
       "email": _emailTEController.text,
       "firstName": _firstNameTEController.text.trim(),
@@ -205,34 +209,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (photo != null) {
       inputParams["photo"] = photo;
     }
-    final response =
-        await NetworkCaller.postRequest(Url.updateProfileUrl, inputParams);
-    if (response.isSuccess) {
-      if (response.body['status'] == 'success') {
-        UserData userData = UserData(
-            email: _emailTEController.text,
-            firstName: _firstNameTEController.text.trim(),
-            lastName: _lastNameTEController.text.trim(),
-            mobile: _mobileTEController.text.trim(),
-            photo: photo);
-        AuthController.saveUserData(userData);
-      }
-      if (mounted) {
-        _updateProfileInProgress = false;
-        setState(() {});
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MainBottomNavBarScreen()),
-            (route) => false);
-      }
+    final result =
+        await updateProfileController.updateProfile(inputParams);
+    if (result) {
+       Get.find<ProfileAppBarController>().updateProfileAppBar();
+        Get.back();
     } else {
       if (!mounted) return;
-      _updateProfileInProgress = false;
-      setState(() {});
       commonSnackBar(
           context: context,
-          snackBarContent: 'Profile Update Failed',
+          snackBarContent: updateProfileController.getErrorMessage,
           isErrorSnack: true);
     }
   }

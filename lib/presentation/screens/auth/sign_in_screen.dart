@@ -21,7 +21,6 @@ class _SignInState extends State<SignIn> {
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final SignInController _signInController = Get.find<SignInController>();
-  bool _obscure = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,23 +63,27 @@ class _SignInState extends State<SignIn> {
                 validator: emailValidator,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                  decoration: InputDecoration(
-                      hintText: 'Password',
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _obscure ? _obscure = false : _obscure = true;
-                          setState(() {});
-                        },
-                        icon: Icon(_obscure
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined),
-                      )),
-                  controller: _passwordTEController,
-                  obscureText: _obscure,
-                  validator: (value) {
-                    return passwordValidator(value);
-                  }),
+              GetBuilder<SignInController>(
+                builder: (signInController) {
+                  return TextFormField(
+                      decoration: InputDecoration(
+                          hintText: 'Password',
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              signInController.changeObscure(signInController.getObscure);
+                            },
+                            icon: Icon(signInController.getObscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined),
+                          )),
+                      controller: _passwordTEController,
+                      obscureText: signInController.getObscure,
+
+                      validator: (value) {
+                        return passwordValidator(value);
+                      });
+                }
+              ),
               const SizedBox(height: 12),
               GetBuilder<SignInController>(
                 builder: (controller) {
@@ -176,14 +179,13 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> _signIn() async {
+    FocusScope.of(context).unfocus();
     bool result =
     await _signInController.signIn(
         _emailTEController.text.trim(), _passwordTEController.text);
     if (result) {
       if (mounted) {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-            builder: (context) => const MainBottomNavBarScreen()), (
-            route) => false);
+       Get.offAll(const MainBottomNavBarScreen());
       }
     }
     else{

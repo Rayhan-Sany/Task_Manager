@@ -5,7 +5,6 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:task_manager/presentation/controllers/task_list_controller.dart';
 import 'package:task_manager/presentation/widgets/common_screen_widgets/task_card.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
-import '../../../data/models/taskByStatusData.dart';
 
 class TaskCardList extends StatefulWidget {
   final String status;
@@ -17,7 +16,6 @@ class TaskCardList extends StatefulWidget {
 }
 
 class _TaskCardListState extends State<TaskCardList> {
-  List<TaskByStatusData> taskByStatusDataList=[];
 
   @override
   void initState() {
@@ -33,19 +31,19 @@ class _TaskCardListState extends State<TaskCardList> {
         visible: taskListController.isGetTaskListInProgress==false,
         replacement:const Center(child: CircularProgressIndicator()),
         child: Visibility(
-          visible: taskByStatusDataList.isNotEmpty,
+          visible: taskListController.taskListByStatus.isNotEmpty,
           replacement: const Center(
             child: Text('No Task Added', style: TextStyle(fontSize: 20)),
           ),
           child: ListView.builder(
             itemBuilder: (context, index) => TaskCard(
-              taskByStatusData: taskByStatusDataList[index],
+              taskByStatusData: taskListController.taskListByStatus[index],
               deleteTaskLocally: () {
                 Get.find<TaskListController>().deleteTaskFromListLocally(index);
               },
             ),
             shrinkWrap: true,
-            itemCount: taskByStatusDataList.length ?? 0,
+            itemCount: taskListController.taskListByStatus.length ?? 0,
             scrollDirection: Axis.vertical,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           ),
@@ -59,9 +57,7 @@ class _TaskCardListState extends State<TaskCardList> {
 
     bool result =
         await Get.find<TaskListController>().getTaskListByStatus(widget.status);
-    if (result) {
-      taskByStatusDataList = Get.find<TaskListController>().taskListByStatus;
-    } else {
+    if (!result){
       if (mounted) {
         commonSnackBar(
             context: context,

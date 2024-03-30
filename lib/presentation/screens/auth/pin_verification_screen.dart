@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:task_manager/data/services/network_caller.dart';
-import 'package:task_manager/data/utils/urls.dart';
+import 'package:task_manager/presentation/controllers/pin_verification_controller.dart';
 import 'package:task_manager/presentation/screens/auth/set_password_screen.dart';
 import 'package:task_manager/presentation/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
@@ -18,8 +18,9 @@ class PinVerificationScreen extends StatefulWidget {
 }
 
 class _PinVerificationScreenState extends State<PinVerificationScreen> {
+  PinVerificationController pinVerificationController =
+      Get.find<PinVerificationController>();
   final TextEditingController _pinTEController = TextEditingController();
-  bool _isPinVerificationInProgress = false;
   bool isPinFieldNotNull = true;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -36,22 +37,27 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
 
   Form pinVerificationForm(BuildContext context) {
     return Form(
-        key: _formKey,
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(
-            'Pin Verification',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          Text(
-            'A 6 digit verification pin will send to your email address',
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 15),
-          otpVerificationField(context),
-          const SizedBox(height: 12),
-          Visibility(
-            visible: _isPinVerificationInProgress == false,
+      key: _formKey,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          'Pin Verification',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        Text(
+          'A 6 digit verification pin will send to your email address',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 15),
+        GetBuilder<PinVerificationController>(
+            builder: (pinVerificationController) {
+          return otpVerificationField(context);
+        }),
+        const SizedBox(height: 12),
+        GetBuilder<PinVerificationController>(
+            builder: (pinVerificationController) {
+          return Visibility(
+            visible:
+                pinVerificationController.isPinVerificationInProgress == false,
             replacement: const Center(child: CircularProgressIndicator()),
             child: ElevatedButton(
               onPressed: () {
@@ -61,26 +67,24 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
               },
               child: const Icon(Symbols.expand_circle_right),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Have account?',
-                  style: Theme.of(context).textTheme.titleMedium),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignIn()),
-                      (route) => false);
-                },
-                child: const Text('Sign In'),
-              ),
-            ],
-          ),
-        ]),
-      );
+          );
+        }),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Have account?',
+                style: Theme.of(context).textTheme.titleMedium),
+            TextButton(
+              onPressed: () {
+                Get.offAll(const SignIn());
+              },
+              child: const Text('Sign In'),
+            ),
+          ],
+        ),
+      ]),
+    );
   }
 
   PinCodeTextField otpVerificationField(BuildContext context) {
@@ -117,9 +121,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
       },
       onChanged: (value) {
         print(value);
-        setState(() {
-          // currentText = value;
-        });
+        pinVerificationController.needUpdate();
       },
       beforeTextPaste: (text) {
         print("Allowing to paste $text");
@@ -132,37 +134,23 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
   }
 
   Future<void> _verifyOTP() async {
-    _isPinVerificationInProgress = true;
-    setState(() {});
-    final response = await NetworkCaller.getRequest(
-        Url.verifyOTPUrl(_pinTEController.text, widget.email));
-    if (response.isSuccess) {
-      _isPinVerificationInProgress = false;
-      setState(() {});
-      if (response.body['status'] == 'success') {
-        if (mounted) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SetPasswordScreen(
-                      otp: _pinTEController.text, email: widget.email)));
-        }
-      } else {
-        if (mounted) {
-          commonSnackBar(
-              context: context,
-              snackBarContent: response.body['data'],
-              isErrorSnack: true);
-        }
+    final result = await pinVerificationController.verifyOtp(
+        widget.email, _pinTEController.text);
+    if (result) {
+      if (mounted) {
+        Get.to(
+            SetPasswordScreen(otp: _pinTEController.text, email: widget.email));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => SetPasswordScreen(
+        //             otp: _pinTEController.text, email: widget.email)));
       }
     } else {
-      _isPinVerificationInProgress = false;
-      setState(() {});
       if (mounted) {
         commonSnackBar(
             context: context,
-            snackBarContent:
-                response.errorMassage ?? 'Error! Something Wrong Try Again',
+            snackBarContent: pinVerificationController.getErrorMessage,
             isErrorSnack: true);
       }
     }

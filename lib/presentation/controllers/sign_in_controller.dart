@@ -1,16 +1,17 @@
 
 import 'package:get/get.dart';
 import 'package:task_manager/data/utils/urls.dart';
-
 import '../../data/models/login_response.dart';
 import '../../data/services/network_caller.dart';
 import 'auth_controller.dart';
 
 class SignInController extends GetxController{
   bool _inProgress = false;
+  bool _obscure = true;
   String? errorMessage;
   String get getErrorMessage =>errorMessage??'Login Failed Try Again';
   bool get isSignInInProgress=>_inProgress;
+  bool get getObscure=>_obscure;
   Future<bool> signIn(String email,String password)async{
     _inProgress = true;
     update();
@@ -33,4 +34,5 @@ class SignInController extends GetxController{
       return false;
     }
   }
+  void changeObscure(bool obscure){ obscure?_obscure=false:_obscure=true;update();}
 }

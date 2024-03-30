@@ -1,13 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:task_manager/data/models/response_object.dart';
-import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/presentation/controllers/sign_up_controller.dart';
 import 'package:task_manager/presentation/utils/app_color.dart';
 import 'package:task_manager/presentation/widgets/common_snackbar.dart';
 import 'package:task_manager/presentation/widgets/svg_background_setter.dart';
-
-import '../../../data/utils/urls.dart';
+import 'package:string_validator/string_validator.dart' as str;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -23,7 +22,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _signUpInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -81,23 +79,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               enabled: true,
               decoration: const InputDecoration(hintText: 'Password'),
               controller: _passwordTEController,
-              validator: passwordValidator,
+              validator:passwordValidator,
             ),
             const SizedBox(height: 12),
-            Visibility(
-              visible: !_signUpInProgress,
-              replacement: Center(
-                  child: CircularProgressIndicator(
-                color: AppColor.baseColor,
-              )),
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _signUp();
-                  }
-                },
-                child: const Icon(Symbols.expand_circle_right),
-              ),
+            GetBuilder<SignUpController>(
+              builder: (signUpController) {
+                return Visibility(
+                  visible:signUpController.isSignUpInProgress==false,
+                  replacement: Center(
+                      child: CircularProgressIndicator(
+                    color: AppColor.baseColor,
+                  )),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _signUp();
+                      }
+                    },
+                    child: const Icon(Symbols.expand_circle_right),
+                  ),
+                );
+              }
             ),
             const SizedBox(height: 20),
             Row(
@@ -107,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: Theme.of(context).textTheme.titleMedium),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                   Get.back();
                   },
                   child: const Text('Sign In'),
                 )
@@ -120,8 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    _signUpInProgress = true;
-    setState(() {});
+    FocusScope.of(context).unfocus();
     Map<String, dynamic> requestBody = {
       "email": _emailNameTEController.text.trim(),
       "firstName": _firstNameTEController.text.trim(),
@@ -129,24 +130,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "mobile": _mobileTEController.text.trim(),
       "password": _passwordTEController.text,
     };
-    ResponseObject response =
-        await NetworkCaller.postRequest(Url.registrationUrl, requestBody);
-    if (response.isSuccess) {
+    final result =
+        await Get.find<SignUpController>().signUp(requestBody);
+    if (result) {
       if (mounted) {
         commonSnackBar(
             context: context, snackBarContent: 'Sign Up Success please log in');
-        Navigator.pop(context);
+        Get.back();
       }
     } else {
       if (mounted) {
         commonSnackBar(
             context: context,
-            snackBarContent: 'Sign Up Failed Try Again',
+            snackBarContent:Get.find<SignUpController>().getErrorMessage,
             isErrorSnack: true);
       }
     }
-    _signUpInProgress = false;
-    setState(() {});
   }
 
   bool isFieldEmpty(String? value) {
@@ -168,7 +167,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? emailValidator(String? value) {
     if (isFieldEmpty(value)) {
       return 'Enter Your Email';
-    } else {
+    }
+    else if(!str.isEmail(value??'')){
+      return 'Enter Valid Email';
+    }
+      else {
       return null;
     }
   }

@@ -76,6 +76,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   }
 
   void _createNewTask() async {
+    FocusScope.of(context).unfocus();
    final result = await Get.find<AddNewTaskController>().addNewTask(
         _subjectTEController.text.trim(), _descriptionTEController.text.trim());
     if (result) {
